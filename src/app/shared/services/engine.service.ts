@@ -1,48 +1,43 @@
 import * as THREE from 'three';
-import assets from '../Utils/assets';
-import { ElementRef, Injectable, NgZone, OnDestroy, ViewChild } from '@angular/core';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { assets } from '../Utils/assets';
+import { ElementRef, Injectable, OnDestroy } from '@angular/core';
+import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { IAsset, assetTypesEnum, deviceType, deviceTypesEnum, themeType, themeTypesEnum } from './engine.model';
+import { Mesh } from 'three';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EngineService implements OnDestroy {
-  //theme variables
-  public theme: string = "light";
-  public toggleButton = document.querySelector(".toggle-button");
-  public toggleCircle = document.querySelector(".toggle-circle");
-  //environment variables
-  sunLight: THREE.DirectionalLight = new THREE.DirectionalLight("#ffffff", 3);
-  ambientLight: THREE.AmbientLight = new THREE.AmbientLight("#ffffff", 1);
-  //room variables
-  room: any;
-  actualRoom: any;
-  rotation: number = 0;
-  lerp = {
+  private assetsObject: IAsset[] = assets;
+  public theme: themeType = themeTypesEnum.light;
+  private sunLight: THREE.DirectionalLight = new THREE.DirectionalLight("#ffffff", 3);
+  private ambientLight: THREE.AmbientLight = new THREE.AmbientLight("#ffffff", 1);
+  private room!: GLTF;
+  private actualRoom!: THREE.Group;
+  private rotation: number = 0;
+  private circleFirst!: Mesh;
+  private circleSecond!: Mesh;
+  private circleThird!: Mesh;
+  private lerp = {
     current: 0,
     target: 0,
     ease: 0.1,
   };
+  private items!: Record<string, GLTF>;
+  private queue: number = 0;
+  private loaded: number = 0;
+  private loaders!: { gltfLoader: GLTFLoader, dracoLoader: DRACOLoader };
+  private controls!: OrbitControls;
 
-  // resources variables
-  private assets!: any;
-  public items: any = {};
-  public queue: number = 0;
-  public loaded: number = 0;
-  public loaders: any = {};
-
-  public controls!: OrbitControls;
-  public timeline!: gsap.core.Timeline;
-
-  private camera!: THREE.PerspectiveCamera | THREE.OrthographicCamera;
+  private camera!: THREE.OrthographicCamera;
   private canvas!: HTMLCanvasElement;
   private cube!: THREE.Mesh;
   private frameId!: number;
-  private isPerspective = false;
   private renderer!: THREE.WebGLRenderer;
 
   //sizes variables
@@ -52,18 +47,18 @@ export class EngineService implements OnDestroy {
   private aspect: number = 0;
   private pixelRatio: number = 0;
   private frustrum: number = 0;
-  private device: string = "desktop";
+  private device: deviceType = deviceTypesEnum.desktop;
 
   private scene!: THREE.Scene;
 
   //time variables
 
-  public start: number = Date.now();
-  public current: number = this.start;
-  public elapsed: number = 0;
-  public delta: number = 16;
+  private start: number = Date.now();
+  private current: number = this.start;
+  private elapsed: number = 0;
+  private delta: number = 16;
 
-  constructor(private ngZone: NgZone) { }
+  constructor() { }
 
   public ngOnDestroy(): void {
     if (this.frameId !== null) cancelAnimationFrame(this.frameId);
@@ -74,27 +69,22 @@ export class EngineService implements OnDestroy {
     this.scene = new THREE.Scene();
     this.setTime();
     this.setSizes();
-    this.isPerspective ? this.createPerspectiveCamera() : this.createOrthographicCamera();
+    this.createOrthographicCamera();
     this.setRenderer();
-    this.setResources();
-    this.setFloor();
     this.setOrbitControls();
-    /* this.createWorld(); */
+    this.setCircles();
+    this.setResources();
 
     this.update();
-
-    /* this.light = new THREE.AmbientLight(0x404040);
-    this.light.position.z = 10;
-    this.scene.add(this.light); */
   }
 
   public clickToggle(): void {
-    this.theme = this.theme === 'light' ? 'dark' : 'light';
+    this.theme = this.theme === themeTypesEnum.light ? themeTypesEnum.dark : themeTypesEnum.light;
     this.switchTheme();
   }
 
   public switchTheme(): void {
-    if (this.theme === "dark") {
+    if (this.theme === themeTypesEnum.dark) {
       gsap.to(this.sunLight.color, {
           r: 0.17254901960784313,
           g: 0.23137254901960785,
@@ -133,31 +123,305 @@ export class EngineService implements OnDestroy {
 
   public setOrbitControls(): void {
     this.controls = new OrbitControls(this.camera, this.canvas);
-    this.controls.enableDamping = true;
-    this.controls.enableZoom = true;
   }
 
-  public setScrollTrigger(): void {
-    this.timeline = gsap.timeline();
-    this.timeline.to(this.actualRoom.position, {
-      x: () => {
-        return this.width * 0.0012
-      },
-      scrollTrigger: {
-        trigger: ".first-move",
-        markers: true,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 0.6,
-        invalidateOnRefresh: true
-      }
+  setScrollTrigger() {
+    ScrollTrigger.matchMedia({
+        //Desktop
+        "(min-width: 969px)": () => {
+            // console.log("fired desktop");
+
+            this.actualRoom.scale.set(0.11, 0.11, 0.11);
+            this.camera.position.set(0, 6.5, 10);
+            this.actualRoom.position.set(0, 0, 0);
+            // First section -----------------------------------------
+            const firstMoveTimeline = gsap.timeline({
+                scrollTrigger: {
+                    trigger: ".first-move",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 0.6,
+                    // markers: true,
+                    invalidateOnRefresh: true,
+                },
+            });
+            firstMoveTimeline.fromTo(
+                this.actualRoom.position,
+                { x: 0, y: 0, z: 0 },
+                {
+                    x: () => {
+                        return this.width * 0.0014;
+                    },
+                }
+            );
+
+            // Second section -----------------------------------------
+            const secondMoveTimeline = gsap.timeline({
+                scrollTrigger: {
+                    trigger: ".second-move",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 0.6,
+                    invalidateOnRefresh: true,
+                },
+            });
+
+            secondMoveTimeline.to(
+                this.actualRoom.position,
+                {
+                    x: () => {
+                        return 1;
+                    },
+                    z: () => {
+                        return this.height * 0.0032;
+                    },
+                },
+                "same"
+            );
+            secondMoveTimeline.to(
+                this.actualRoom.scale,
+                {
+                    x: 0.4,
+                    y: 0.4,
+                    z: 0.4,
+                },
+                "same"
+            );
+
+          // Third section -----------------------------------------
+          const thirdMoveTimeline = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".third-move",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 0.6,
+                invalidateOnRefresh: true,
+            },
+          });
+          thirdMoveTimeline.to(this.camera.position, {
+              y: 1.5,
+              x: -3.1,
+          });
+        },
+
+        // Mobile
+        "(max-width: 968px)": () => {
+            // console.log("fired mobile");
+
+            // Resets
+            this.actualRoom.scale.set(0.07, 0.07, 0.07);
+            this.actualRoom.position.set(0, 0, 0);
+            this.camera.position.set(0, 6.5, 10);
+
+            // First section -----------------------------------------
+            const firstMoveTimeline = gsap.timeline({
+                scrollTrigger: {
+                    trigger: ".first-move",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 0.6,
+                    // invalidateOnRefresh: true,
+                },
+            });
+            firstMoveTimeline.to(this.actualRoom.scale, {
+                x: 0.1,
+                y: 0.1,
+                z: 0.1,
+            });
+
+            // Second section -----------------------------------------
+            const secondMoveTimeline = gsap.timeline({
+                scrollTrigger: {
+                    trigger: ".second-move",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 0.6,
+                    invalidateOnRefresh: true,
+                },
+            });
+            secondMoveTimeline.to(
+                this.actualRoom.scale,
+                {
+                    x: 0.25,
+                    y: 0.25,
+                    z: 0.25,
+                },
+                "same"
+            );
+            secondMoveTimeline.to(
+                this.actualRoom.position,
+                {
+                    x: 1.5,
+                },
+                "same"
+            );
+            // Third section -----------------------------------------
+
+            const thirdMoveTimeline = gsap.timeline({
+              scrollTrigger: {
+                  trigger: ".third-move",
+                  start: "top top",
+                  end: "bottom bottom",
+                  scrub: 0.6,
+                  invalidateOnRefresh: true,
+              },
+            });
+
+            thirdMoveTimeline.to(this.actualRoom.position, {
+                z: -4.5,
+            });
+        },
+
+        // all
+        all: () => {
+          const firstCircle = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".first-move",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 0.6,
+            },
+        }).to(this.circleFirst.scale, {
+            x: 3,
+            y: 3,
+            z: 3,
+        });
+
+        // Second section -----------------------------------------
+        const secondCircle = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".second-move",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 0.6,
+            },
+        })
+            .to(
+                this.circleSecond.scale,
+                {
+                    x: 3,
+                    y: 3,
+                    z: 3,
+                },
+                "same"
+            )
+            .to(
+                this.actualRoom.position,
+                {
+                    y: 0.7,
+                },
+                "same"
+            );
+
+        // Third section -----------------------------------------
+        const thirdCircle = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".third-move",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 0.6,
+            },
+        }).to(this.circleThird.scale, {
+            x: 3,
+            y: 3,
+            z: 3,
+        });
+
+          const secondPartTimeline = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".third-move",
+                start: "center center",
+            },
+          });
+          let first: any = [];
+          this.actualRoom.children.forEach((child: any) => {
+            if (child.name === "Mini_Floor") {
+                first.push(gsap.to(child.position, {
+                    x: -5.44055,
+                    z: 13.6135,
+                    duration: 0.4,
+                }));
+            }
+            if (child.name === "Mailbox") {
+              first.push(gsap.to(child.scale, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                    duration: 0.4,
+                }));
+            }
+            if (child.name === "Lamp") {
+              first.push(gsap.to(child.scale, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                    ease: "back.out(2)",
+                    duration: 0.4,
+                }));
+            }
+            if (child.name === "FloorFirst") {
+              first.push(gsap.to(child.scale, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                    ease: "back.out(2)",
+                    duration: 0.4,
+                }));
+            }
+            if (child.name === "FloorSecond") {
+              first.push(gsap.to(child.scale, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                    duration: 0.4,
+                }));
+            }
+            if (child.name === "FloorThird") {
+              first.push(gsap.to(child.scale, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                    ease: "back.out(2)",
+                    duration: 0.4,
+                }));
+            }
+            if (child.name === "Dirt") {
+              first.push(gsap.to(child.scale, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                    ease: "back.out(2)",
+                    duration: 0.4,
+                }));
+            }
+            if (child.name === "Flower1") {
+              first.push(gsap.to(child.scale, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                    ease: "back.out(2)",
+                    duration: 0.4,
+                }));
+            }
+            if (child.name === "Flower2") {
+              first.push(gsap.to(child.scale, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                    ease: "back.out(2)",
+                    duration: 0.4,
+                }));
+            }
+          });
+          first.forEach((value: any) => secondPartTimeline.add(value));
+        }
     });
-  }
+}
 
   public setResources(): void {
-    this.assets = assets;
+    this.assetsObject = assets;
     this.items = {};
-    this.queue = this.assets.length;
+    this.queue = this.assetsObject.length;
     this.loaded = 0;
 
     this.setLoaders();
@@ -165,24 +429,26 @@ export class EngineService implements OnDestroy {
   }
 
   public setLoaders() {
-    this.loaders = {};
-    this.loaders.gltfLoader = new GLTFLoader();
-    this.loaders.dracoLoader = new DRACOLoader();
+    this.loaders = {
+      gltfLoader: new GLTFLoader(),
+      dracoLoader: new DRACOLoader()
+    };
+
     this.loaders.dracoLoader.setDecoderPath("assets/draco/");
     this.loaders.gltfLoader.setDRACOLoader(this.loaders.dracoLoader);
   }
 
   public startLoading() {
-    for (const asset of this.assets) {
-        if (asset.type === "glbModel") {
-            this.loaders.gltfLoader.load(asset.path, (file: any) => {
+    for (const asset of this.assetsObject) {
+        if (asset.type === assetTypesEnum.glbModel) {
+            this.loaders.gltfLoader.load(asset.path, (file: GLTF) => {
                 this.singleAssetLoaded(asset, file);
             });
         }
     }
   }
 
-  public singleAssetLoaded(asset: any, file: any) {
+  public singleAssetLoaded(asset: IAsset, file: GLTF) {
     this.items[asset.name] = file;
     this.loaded++;
 
@@ -193,9 +459,10 @@ export class EngineService implements OnDestroy {
 
 
   public createWorld() {
-    this.room = this.items.room;
+    this.room = this.items['room'];
     this.actualRoom = this.room.scene;
     this.scene.add(this.actualRoom);
+    this.setFloor();
     
     this.setModel();
     this.onMouseMove();
@@ -226,6 +493,30 @@ export class EngineService implements OnDestroy {
         child.children[0].material.depthWrite = false;
         child.children[0].material.depthTest = false;
       }
+
+      if (child.name === "Mini_Floor") {
+        child.position.x = -0.289521;
+        child.position.z = 8.83572;
+      }
+
+      if (
+        child.name === "Mailbox" ||
+        child.name === "Lamp" ||
+        child.name === "FloorFirst" ||
+        child.name === "FloorSecond" ||
+        child.name === "FloorThird" ||
+        child.name === "Dirt" ||
+        child.name === "Flower1" ||
+        child.name === "Flower2"
+      ) {
+         child.scale.set(0, 0, 0);
+      }
+      if (child.name === "Cube") {
+          // child.scale.set(1, 1, 1);
+          child.position.set(0, -1, 0);
+          child.rotation.y = Math.PI / 4;
+      }
+      
     });
   }
 
@@ -260,9 +551,9 @@ export class EngineService implements OnDestroy {
     this.pixelRatio = Math.min(window.devicePixelRatio, 2);
     this.frustrum = 5;
     if (this.width < 968) {
-        this.device = "mobile";
+        this.device = deviceTypesEnum.mobile;
     } else {
-        this.device = "desktop";
+        this.device = deviceTypesEnum.desktop;
     }
 
     window.addEventListener("resize", () => {
@@ -272,12 +563,10 @@ export class EngineService implements OnDestroy {
         this.pixelRatio = Math.min(window.devicePixelRatio, 2);
         this.resize();
 
-        if (this.width < 968 && this.device !== "mobile") {
-            this.device = "mobile";
-            /* this.emit("switchdevice", this.device); */
-        } else if (this.width >= 968 && this.device !== "desktop") {
-            this.device = "desktop";
-            /* this.emit("switchdevice", this.device); */
+        if (this.width < 968 && this.device !== deviceTypesEnum.mobile) {
+            this.device = deviceTypesEnum.mobile;
+        } else if (this.width >= 968 && this.device !== deviceTypesEnum.desktop) {
+            this.device = deviceTypesEnum.desktop;
         }
     });
   }
@@ -301,18 +590,9 @@ export class EngineService implements OnDestroy {
     window.addEventListener("mousemove", (e) => {
         this.rotation =
             ((e.clientX - window.innerWidth / 2) * 2) / window.innerWidth;
-        this.lerp.target = this.rotation * 0.5;
+        this.lerp.target = this.rotation * 0.05;
     });
 }
-
-  public createPerspectiveCamera(): void {
-    this.camera = new THREE.PerspectiveCamera(
-      75, this.aspect, 0.1, 1000
-    );
-
-    this.camera.position.z = 5;
-    this.scene.add(this.camera);
-  }
 
   public createOrthographicCamera(): void {
     const frustrum = 5;
@@ -328,29 +608,56 @@ export class EngineService implements OnDestroy {
     this.camera.position.y = 4;
     this.camera.position.z = 5;
     this.scene.add(this.camera);
-
-    /* const size = 20;
-    const divisions = 20;
-
-    const gridHelper = new THREE.GridHelper(size, divisions);
-    this.scene.add(gridHelper);
-
-    const axesHelper = new THREE.AxesHelper(10);
-    this.scene.add(axesHelper); */
   }
 
   setFloor() {
     const geometry = new THREE.PlaneGeometry(100, 100);
     const material = new THREE.MeshStandardMaterial({
         color: 0xffe6a2,
-        side: THREE.BackSide,
+        side: THREE.BackSide
     });
     const plane = new THREE.Mesh(geometry, material);
     this.scene.add(plane);
     plane.rotation.x = Math.PI / 2;
     plane.position.y = -0.3;
     plane.receiveShadow = true;
-}
+  }
+
+  setCircles() {
+        const geometry = new THREE.CircleGeometry(5, 64);
+        const material = new THREE.MeshStandardMaterial({ color: 0xe5a1aa });
+        const material2 = new THREE.MeshStandardMaterial({ color: 0x8395cd });
+        const material3 = new THREE.MeshStandardMaterial({ color: 0x7ad0ac });
+
+        this.circleFirst = new THREE.Mesh(geometry, material);
+        this.circleSecond = new THREE.Mesh(geometry, material2);
+        this.circleThird = new THREE.Mesh(geometry, material3);
+
+        this.circleFirst.position.y = -0.29;
+
+        this.circleSecond.position.y = -0.28;
+        this.circleSecond.position.x = 2;
+
+        this.circleThird.position.y = -0.27;
+
+        this.circleFirst.scale.set(0, 0, 0);
+        this.circleSecond.scale.set(0, 0, 0);
+        this.circleThird.scale.set(0, 0, 0);
+
+        this.circleFirst.rotation.x =
+            this.circleSecond.rotation.x =
+            this.circleThird.rotation.x =
+                -Math.PI / 2;
+
+        this.circleFirst.receiveShadow =
+            this.circleSecond.receiveShadow =
+            this.circleThird.receiveShadow =
+                true;
+
+        this.scene.add(this.circleFirst);
+        this.scene.add(this.circleSecond);
+        this.scene.add(this.circleThird);
+    }
 
   /* public animate(): void {
     this.ngZone.runOutsideAngular(() => {
@@ -379,19 +686,12 @@ export class EngineService implements OnDestroy {
   }
 
   public resize(): void {
-    if (this.isPerspective) {
-      (<THREE.PerspectiveCamera> this.camera).aspect = this.aspect;
-      this.camera.updateProjectionMatrix();
-    } else {
-      (<THREE.OrthographicCamera> this.camera).left =
-          (-this.aspect * this.frustrum) / 2;
-      (<THREE.OrthographicCamera> this.camera).right =
-          (this.aspect * this.frustrum) / 2;
-      (<THREE.OrthographicCamera> this.camera).top = this.frustrum / 2;
-      (<THREE.OrthographicCamera> this.camera).bottom = -this.frustrum / 2;
-      
-      this.camera.updateProjectionMatrix();
-    }
+    this.camera.left = (-this.aspect * this.frustrum) / 2;
+    this.camera.right = (this.aspect * this.frustrum) / 2;
+    this.camera.top = this.frustrum / 2;
+    this.camera.bottom = -this.frustrum / 2;
+    
+    this.camera.updateProjectionMatrix();
 
     this.renderer.setSize(this.width, this.height);
     this.renderer.setPixelRatio(this.pixelRatio);

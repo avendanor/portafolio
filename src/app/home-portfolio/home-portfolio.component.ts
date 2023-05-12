@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { EngineService } from '../shared/services/engine.service';
+import { themeType, themeTypesEnum } from '../shared/services/engine.model';
 
 @Component({
   selector: 'home-portfolio',
@@ -8,7 +9,8 @@ import { EngineService } from '../shared/services/engine.service';
 })
 export class HomePortfolioComponent implements OnInit{
   @ViewChild('rendererCanvas', {static: true}) public rendererCanvas!: ElementRef<HTMLCanvasElement>;
-  public toggleValue: string = 'light';
+  public toggleValue: themeType = themeTypesEnum.light;
+  public themeTypes = themeTypesEnum;
 
   constructor (private engService: EngineService) {}
 

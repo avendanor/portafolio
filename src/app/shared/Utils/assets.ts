@@ -1,4 +1,6 @@
-export default [
+import { IAsset } from "../services/engine.model";
+
+export const assets: IAsset[] = [
   {
       name: "room",
       type: "glbModel",
