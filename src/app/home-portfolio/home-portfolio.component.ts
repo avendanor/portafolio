@@ -8,12 +8,17 @@ import { EngineService } from '../shared/services/engine.service';
 })
 export class HomePortfolioComponent implements OnInit{
   @ViewChild('rendererCanvas', {static: true}) public rendererCanvas!: ElementRef<HTMLCanvasElement>;
+  public toggleValue: string = 'light';
 
   constructor (private engService: EngineService) {}
 
   public ngOnInit(): void {
     this.engService.createScene(this.rendererCanvas);
-    this.engService.animate();
+    /* this.engService.animate(); */
   }
 
+  public clickToggle(): void {
+    this.engService.clickToggle();
+    this.toggleValue = this.engService.theme;
+  }
 }

@@ -1,1 +1,44 @@
 /* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+html, body {
+  font-family: "Montserrat", sans-serif;
+  color: var(--color-text-light);
+}
+
+h1,
+section,
+p,
+span,
+svg{
+  transition: background-color 0.5s, color 0.5s;
+}
+
+:root{
+  /* Light Theme Variables */
+  --color-text-light: #333332;
+  --color-background-light: #FAF4E5;
+  --color-pink-light: #e5a1aa;
+  --color-green-light: #7AD0AC;
+  --color-blue-light: #8395CD;
+
+  /* Dark Theme Variables */
+  --color-text-dark: #FAF4E5;
+  --color-background-dark: #8395CD;
+}
+
+.light-theme{
+  --color-text: var(--color-text-light);
+  --color-background: var(--color-background-light);
+  --color-pink: var(--color-pink-light);
+  --color-green: var(--color-green-light);
+  --color-blue: var(--color-blue-light);
+}
+
+.dark-theme{
+  --color-text: var(--color-text-dark);
+  --color-background: var(--color-background-dark);
+  --color-pink: var(--color-text-dark);
+  --color-green: var(--color-text-dark);
+  --color-blue: var(--color-text-dark);
+}
