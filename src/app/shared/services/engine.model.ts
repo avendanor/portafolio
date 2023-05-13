@@ -1,5 +1,3 @@
-import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
-
 // assets
 export enum assetTypesEnum {
   glbModel = 'glbModel'

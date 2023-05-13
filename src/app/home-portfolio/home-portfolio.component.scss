@@ -1,9 +1,9 @@
 .home {
   position: fixed;
-  /* background-color: #ffe6a2; */
 }
+
 .content{
-  z-index:99999;
+  z-index: 10;
   width: 100vw;
   height: 100vh;
   position: absolute;
@@ -168,9 +168,9 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  top: 48px;
-  right: 48px;
-  z-index: 99999999999999;
+  top: 15px;
+  right: 20px;
+  z-index: 10;
 }
 
 .sun-wrapper, 
