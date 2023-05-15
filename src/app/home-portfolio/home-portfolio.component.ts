@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, OnDestroy} from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, OnDestroy, NgZone} from '@angular/core';
 import { AnimationsService } from '../shared/services/animations.service';
 import * as THREE from 'three';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -55,7 +55,7 @@ export class HomePortfolioComponent implements OnInit, OnDestroy {
 
   //time variables
 
-  constructor (private animationsService: AnimationsService, private themeService: ThemeService) {}
+  constructor (private animationsService: AnimationsService, private themeService: ThemeService, private zone: NgZone) {}
 
   public ngOnInit(): void {
     this.canvas = this.rendererCanvas.nativeElement;
@@ -67,16 +67,16 @@ export class HomePortfolioComponent implements OnInit, OnDestroy {
     this.setCircles();
     this.setResources();
 
+    this.themeService.themeObservable.subscribe((value) => {
+      this.theme = value;
+      this.themeService.switchTheme.apply(this);
+    })
+
     this.update();
   }
 
   public ngOnDestroy(): void {
     if (this.frameId !== null) cancelAnimationFrame(this.frameId);
-  }
-
-  public clickToggle(): void {
-    this.theme = this.theme === themeTypesEnum.light ? themeTypesEnum.dark : themeTypesEnum.light;
-    this.themeService.switchTheme.apply(this);
   }
 
   public setOrbitControls(): void {
@@ -173,11 +173,6 @@ export class HomePortfolioComponent implements OnInit, OnDestroy {
         child.name === "Flower2"
       ) {
          child.scale.set(0, 0, 0);
-      }
-      if (child.name === "Cube") {
-          // child.scale.set(1, 1, 1);
-          child.position.set(0, -1, 0);
-          child.rotation.y = Math.PI / 4;
       }
       
     });

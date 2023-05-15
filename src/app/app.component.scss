@@ -1,7 +1,4 @@
-/*=============== BASE ===============*/
-* {
-  box-sizing: border-box;
-}
+@import 'scss/variables.scss';
 
 ul {
   list-style: none;
@@ -29,10 +26,21 @@ a {
 }
 
 /*=============== HEADER Y NAV ===============*/
+.light-theme {
+  & .cloud,.cloud::after, .cloud::before {
+    background: $cloudBlue !important;
+  }
+}
+.dark-theme {
+  & .cloud,.cloud::after, .cloud::before {
+    background: $blue !important;
+  }
+}
+
 .nav {
   padding-top: 2rem;
   position: fixed;
-  z-index: 10;
+  z-index: 10000;
   width: 100%;
   height: 120px;
 
@@ -41,118 +49,114 @@ a {
     height: auto;
   }
 
+  &__mask {
+    background-color: var(--color-background);
+    border-radius: 50%;
+  }
+
   &__list {
     display: flex;
     flex-direction: row;
     column-gap: 10px;
+    padding: 0 10px;
     align-items: center;
+
+    &.cloud {
+      background: #016AB1;
+      border-radius: 100px;
+      box-shadow: 0 8px 5px rgba(0, 0, 0, 0.1);
+      height: auto;
+      position: relative;
+    }
+    
+    &.cloud::after{
+      background: #016AB1;
+      content: '';
+      position: absolute;
+      z-indeX: -1;
+    }
+    &.cloud::before {
+      background: #016AB1;
+      content: '';
+      position: absolute;
+      z-indeX: -1;
+    }
+    
+    &.cloud::after {
+      border-radius: 56px;
+      height: 95px;
+      right: 62px;
+      top: -35px;
+      width: 96px;
+    }
+    
+    &.cloud::before {
+      border-radius: 56px;
+      height: 84px;
+      left: 34px;
+      top: -22px;
+      width: 88px;
+    }
+  }
+
+  &__link {
+    color: var(--color-text);
+    &:hover {
+      color: $white;
+    }
   }
 }
 
-.nav__link {
-  color: var(--color-text);
-  display: inline-flex;
-  align-items: center;
-  column-gap: 1rem;
-  font-weight: 500;
-  transition: .3s;
-}
-
-.nav__link i {
-  font-size: 1.15rem;
-}
-
-.nav__link:hover {
-  color: var(--color-text);
-}
-
-.main {
-  position: relative;
-  background-color: var(--color-text);
-  transition: .4s;
-}
-
-.header {
-  width: 100%;
-  background-color: var(--color-text);
+/* Toggle Bar --------------------------------------------- */
+.toggle-bar {
   position: fixed;
-  top: 0;
-  left: 0;
-  z-index: var(--z-fixed);
-}
-
-.header__nav {
-  height: 3.5rem;
   display: flex;
-  justify-content: space-between;
+  flex-direction: row;
+  justify-content: center;
   align-items: center;
+  top: 23px;
+  right: 90px;
+  z-index: 100000;
 }
 
-.header__logo, .header__toggle {
+.sun-wrapper, 
+.moon-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   color: var(--color-text);
 }
 
-.header__logo {
-  font-weight: 500;
-}
-
-.header__toggle {
-  font-size: 1.15rem;
+.toggle-button {
   cursor: pointer;
+  position: relative;
+  width: 56px;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-background);
+  border-radius: 999px;
+  margin: 0px 16px;
+  border: none;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
-/* Show menu */
-.show-menu {
-  transform: translate(70%);
+.toggle-circle{
+  position: absolute;
+  left: 6px;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  background-color: var(--color-blue);
+  transition: all 0.2s ease-in-out;
 }
 
-/* Change background header */
-.scroll-header {
-  box-shadow: 0 1px 4px rgba(40, 37, 37, 0.1);
+.toggle-button:hover .toggle-circle{
+  transform: scale(0.9);
 }
 
-/* Active link */
-.active-link {
-  color: var(--title-color-dark);
+.slide{
+  left: 31px;
 }
-
-/*=============== BREAKPOINTS ===============*/
-/* For small devices */
-/* @media screen and (max-width: 968px) {
-  .container {
-    margin-left: 1rem;
-    margin-right: 1rem;
-  }
-}
-
-@media screen and (min-width: 969px) {
-  .container {
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .section {
-    padding: 7rem 0 2rem;
-  }
-  .header__nav {
-    height: calc(var(--header-height) + 1.5rem);
-  }
-  .nav__shape {
-    width: 350px;
-    height: 350px;
-  }
-  .nav__mask {
-    width: 100px;
-    height: 100px;
-    border-radius: 2rem;
-    margin-bottom: 2rem;
-  }
-  .nav__img {
-    width: 90px;
-  }
-  .nav__link {
-    font-size: var(--normal-font-size);
-  }
-  .nav__link i {
-    font-size: 1.25rem;
-  }
-} */

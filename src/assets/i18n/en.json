@@ -1,0 +1,14 @@
+{
+  "common": {
+    "about_me": "About Me",
+    "home" : "Home",
+    "projects": "Projects",
+    "work": "Work",
+    "skills": "Skills"
+  },
+  "home": {
+    "name": "Andrés Avendaño",
+    "front_end_developer": "Front End Developer",
+    "portfolio": "Portfolio"
+  }
+}

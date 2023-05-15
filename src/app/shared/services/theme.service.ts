@@ -2,11 +2,13 @@ import { Injectable } from '@angular/core';
 import { themeType, themeTypesEnum } from './engine.model';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ThemeService {
+  public themeObservable = new BehaviorSubject(themeTypesEnum.light);
   public theme!: themeType;
   public sunLight!: THREE.DirectionalLight;
   public ambientLight!: THREE.AmbientLight;
