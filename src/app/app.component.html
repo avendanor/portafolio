@@ -5,32 +5,31 @@
     <div class="nav__menu container">
       <a href="home" class="nav__link">
         <div class="nav__mask">
-          <!-- Change your profile picture -->
           <img src="assets/img/icon.png" class="nav--img">
         </div>
       </a>
-        <ul class="nav__list cloud">
-          <li class="nav__item">
-            <a href="home" class="nav__link">
-              {{ 'common.home' | translate }} 
-            </a>
-          </li>
-          <li class="nav__item">
-            <a href="projects" class="nav__link">
-              {{ 'common.projects' | translate }} 
-            </a>
-          </li>
-          <li class="nav__item">
-            <a href="work" class="nav__link">
-              {{ 'common.work' | translate }} 
-            </a>
-          </li>
-          <li class="nav__item">
-            <a href="skills" class="nav__link">
-              {{ 'common.skills' | translate }} 
-            </a>
-          </li>
-        </ul>
+      <ul class="nav__list cloud">
+        <li class="nav__item">
+          <a routerLink="home" class="nav__link">
+            {{ 'common.home' | translate }} 
+          </a>
+        </li>
+        <li class="nav__item">
+          <a routerLink="projects" class="nav__link">
+            {{ 'common.projects' | translate }} 
+          </a>
+        </li>
+        <li class="nav__item">
+          <a routerLink="work" class="nav__link">
+            {{ 'common.work' | translate }} 
+          </a>
+        </li>
+        <li class="nav__item">
+          <a routerLink="skills" class="nav__link">
+            {{ 'common.skills' | translate }} 
+          </a>
+        </li>
+      </ul>
     </div>
   </nav>
   <div class="toggle-bar">

@@ -174,7 +174,7 @@ export class AnimationsService {
                 trigger: ".first-move",
                 start: "top top",
                 end: "bottom bottom",
-                scrub: 0.6,
+                scrub: 1,
             },
         }).to(this.circleFirst.scale, {
             x: 3,
@@ -188,7 +188,7 @@ export class AnimationsService {
                 trigger: ".second-move",
                 start: "top top",
                 end: "bottom bottom",
-                scrub: 0.6,
+                scrub: 1,
             },
         })
             .to(
@@ -214,7 +214,7 @@ export class AnimationsService {
                 trigger: ".third-move",
                 start: "top top",
                 end: "bottom bottom",
-                scrub: 0.6,
+                scrub: 1,
             },
         }).to(this.circleThird.scale, {
             x: 3,

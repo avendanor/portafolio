@@ -4,6 +4,6 @@ export const assets: IAsset[] = [
   {
       name: "room",
       type: "glbModel",
-      path: "assets/models/Finale.glb",
+      path: "assets/models/room.glb",
   }
 ];

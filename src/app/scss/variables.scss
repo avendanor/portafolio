@@ -2,6 +2,9 @@ $blue: #016AB1;
 $aero: #34BCEB;
 $cloudBlue: #a6d0f2;
 $white: #efefef;
+$fire-brick: #B32124;
+$flame: #DB5326;
+$atomic-tangerine: #FB916A;
 
 /* Light Theme Variables */
 $color-text-light: #333332;
@@ -13,3 +16,45 @@ $color-blue-light: #8395CD;
 /* Dark Theme Variables */
 $color-text-dark: #FAF4E5;
 $color-background-dark: #8395CD;
+
+
+.animation {
+  &-first {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    height: 100vh;
+    background-color: $fire-brick;
+    z-index: 100;
+    animation: slide;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-in-out;
+  }
+  &-second {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    height: 100vh;
+    background-color: $flame;
+    z-index: 99;
+    animation: slide;
+    animation-duration: 0.7s;
+    animation-timing-function: ease-in-out;
+  }
+  &-third {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    height: 100vh;
+    background-color: $atomic-tangerine;
+    z-index: 98;
+    animation: slide;
+    animation-duration: 0.9s;
+    animation-timing-function: ease-in-out;
+  }
+}
+
+@keyframes slide {
+  from {width: 100vw;}
+  to {width: 0vw;}
+}

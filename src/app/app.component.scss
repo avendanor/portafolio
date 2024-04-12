@@ -28,12 +28,12 @@ a {
 /*=============== HEADER Y NAV ===============*/
 .light-theme {
   & .cloud,.cloud::after, .cloud::before {
-    background: $cloudBlue !important;
+    background-color: #ffffff85;
   }
 }
 .dark-theme {
   & .cloud,.cloud::after, .cloud::before {
-    background: $blue !important;
+    background-color: #00000038;
   }
 }
 
@@ -50,7 +50,8 @@ a {
   }
 
   &__mask {
-    background-color: var(--color-background);
+    background-color: #ffffff85;
+    border: 2px solid var(--color-text);
     border-radius: 50%;
   }
 
@@ -62,21 +63,22 @@ a {
     align-items: center;
 
     &.cloud {
-      background: #016AB1;
-      border-radius: 100px;
+      border: 10px solid;
+      border-image: url('../assets/img/textbox.png');
+      border-image-slice: 50;
+      background-clip: padding-box;
+      /* border-radius: 100px;
       box-shadow: 0 8px 5px rgba(0, 0, 0, 0.1);
       height: auto;
-      position: relative;
+      position: relative; */
     }
     
-    &.cloud::after{
-      background: #016AB1;
+    /* &.cloud::after{
       content: '';
       position: absolute;
       z-indeX: -1;
     }
     &.cloud::before {
-      background: #016AB1;
       content: '';
       position: absolute;
       z-indeX: -1;
@@ -96,7 +98,7 @@ a {
       left: 34px;
       top: -22px;
       width: 88px;
-    }
+    } */
   }
 
   &__link {
@@ -114,8 +116,8 @@ a {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  top: 23px;
-  right: 90px;
+  top: 4px;
+  right: 87px;
   z-index: 100000;
 }
 
@@ -136,20 +138,20 @@ a {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--color-background);
+  background-color: transparent;
   border-radius: 999px;
   margin: 0px 16px;
-  border: none;
+  border: 2px solid var(--color-text);
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
-.toggle-circle{
+.toggle-circle {
   position: absolute;
   left: 6px;
   border-radius: 50%;
   width: 20px;
   height: 20px;
-  background-color: var(--color-blue);
+  background-color: var(--color-text);
   transition: all 0.2s ease-in-out;
 }
 

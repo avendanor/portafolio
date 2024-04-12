@@ -17,6 +17,7 @@ import { ThemeService } from '../shared/services/theme.service';
 })
 export class HomePortfolioComponent implements OnInit, OnDestroy {
   @ViewChild('rendererCanvas', {static: true}) public rendererCanvas!: ElementRef<HTMLCanvasElement>;
+  public showPreloader = true;
   private assetsObject: IAsset[] = assets;
   public themeTypes = themeTypesEnum;
   public theme = themeTypesEnum.light;
@@ -117,7 +118,7 @@ export class HomePortfolioComponent implements OnInit, OnDestroy {
     this.loaded++;
 
     if (this.loaded === this.queue) {
-        this.createWorld();
+        /* this.createWorld(); */
     }
 }
 
@@ -131,10 +132,12 @@ export class HomePortfolioComponent implements OnInit, OnDestroy {
     this.setModel();
     this.onMouseMove();
     this.setLights();
+    this.showPreloader = false;
   }
 
   public setModel(): void {
     this.actualRoom.children.forEach((child: any) => {
+      console.log(child)
       child.castShadow = true;
       child.receiveShadow = true;
       
@@ -180,10 +183,10 @@ export class HomePortfolioComponent implements OnInit, OnDestroy {
 
   public setLights(): void {
     this.sunLight.castShadow = true;
-    this.sunLight.shadow.camera.far = 20;
+    this.sunLight.shadow.camera.far = 10;
     this.sunLight.shadow.mapSize.set(2048, 2048);
     this.sunLight.shadow.normalBias = 0.05;
-    this.sunLight.position.set(-1.5, 7, 3);
+    this.sunLight.position.set(-3.5, 6, 3);
     this.scene.add(this.sunLight);
     this.scene.add(this.ambientLight);
 
@@ -226,8 +229,8 @@ export class HomePortfolioComponent implements OnInit, OnDestroy {
       antialias: true
     });
     
-    this.renderer.toneMapping = THREE.CineonToneMapping;
-    this.renderer.toneMappingExposure = 0.5;
+    this.renderer.toneMapping = THREE.LinearToneMapping;
+    this.renderer.toneMappingExposure = 0.25;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.setSize(this.width, this.height);
@@ -253,32 +256,34 @@ export class HomePortfolioComponent implements OnInit, OnDestroy {
   setFloor() {
     const geometry = new THREE.PlaneGeometry(100, 100);
     const material = new THREE.MeshStandardMaterial({
-        color: 0xffe6a2,
+        color: 0xf2e6ce,
         side: THREE.BackSide
     });
     const plane = new THREE.Mesh(geometry, material);
     this.scene.add(plane);
     plane.rotation.x = Math.PI / 2;
-    plane.position.y = -0.3;
+    plane.position.y = -0.4;
     plane.receiveShadow = true;
   }
 
   setCircles() {
-    const geometry = new THREE.CircleGeometry(5, 64);
-    const material = new THREE.MeshStandardMaterial({ color: 0xe5a1aa });
-    const material2 = new THREE.MeshStandardMaterial({ color: 0x8395cd });
-    const material3 = new THREE.MeshStandardMaterial({ color: 0x7ad0ac });
+    const geometry = new THREE.CircleGeometry(10, 64);
+    const material = new THREE.MeshStandardMaterial({ color: 0x34bceb });
+    /* const material = new THREE.MeshStandardMaterial({ color: 0xe5a1aa }); */
+    const material2 = new THREE.MeshStandardMaterial({ color: 0x016ab1 });
+    /* const material2 = new THREE.MeshStandardMaterial({ color: 0x8395cd }); */
+    const material3 = new THREE.MeshStandardMaterial({ color: 0xe6c796 });
 
     this.circleFirst = new THREE.Mesh(geometry, material);
     this.circleSecond = new THREE.Mesh(geometry, material2);
     this.circleThird = new THREE.Mesh(geometry, material3);
 
-    this.circleFirst.position.y = -0.29;
+    this.circleFirst.position.y = -0.39;
 
-    this.circleSecond.position.y = -0.28;
+    this.circleSecond.position.y = -0.38;
     this.circleSecond.position.x = 2;
 
-    this.circleThird.position.y = -0.27;
+    this.circleThird.position.y = -0.37;
 
     this.circleFirst.scale.set(0, 0, 0);
     this.circleSecond.scale.set(0, 0, 0);

@@ -8,17 +8,16 @@
 
 html, body {
   font-family: "Montserrat", sans-serif;
-  color: var(--color-text-light);
-  background-color: rgb(232, 227, 202);
+  overflow-x: hidden;
 }
 
-h1,
+/* h1,
 section,
 p,
 span,
 svg{
   transition: background-color 0.5s, color 0.5s;
-}
+} */
 
 * {
   box-sizing: border-box;
@@ -27,10 +26,10 @@ svg{
 :root{
   /* Light Theme Variables */
   --color-text-light: #333332;
-  --color-background-light: #FAF4E5;
-  --color-pink-light: #e5a1aa;
-  --color-green-light: #7AD0AC;
-  --color-blue-light: #8395CD;
+  --color-background-light: #F2E6CE;
+  --color-blue-83: #8395CD;
+  --color-blue-016: #016AB1;
+  --color-orange-db5: #DB5326;
 
   /* Dark Theme Variables */
   --color-text-dark: #FAF4E5;
@@ -40,17 +39,20 @@ svg{
 .light-theme {
   --color-text: var(--color-text-light);
   --color-background: var(--color-background-light);
-  --color-pink: var(--color-pink-light);
   --color-white: $white;
-  --color-green: var(--color-green-light);
-  --color-blue: var(--color-blue-light);
+  --color-blue: var(--color-blue-83);
+  --color-blue-naval: var(--color-blue-016);
+  --color-orange: var(--color-orange-db5);
+  --color-toggle: red;
 }
 
 .dark-theme {
   --color-text: var(--color-text-dark);
   --color-background: var(--color-background-dark);
-  --color-pink: var(--color-text-dark);
   --color-white: $white;
   --color-green: var(--color-text-dark);
   --color-blue: var(--color-text-dark);
+  --color-blue-naval: var(--color-text-dark);
+  --color-orange: var(--color-text-dark);
+  --color-toggle: red;
 }

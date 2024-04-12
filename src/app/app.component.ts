@@ -20,4 +20,8 @@ export class AppComponent {
     this.theme = this.theme === themeTypesEnum.light ? themeTypesEnum.dark : themeTypesEnum.light;
     this.themeService.themeObservable.next(this.theme);
   }
+
+  redirect() {
+
+  }
 }

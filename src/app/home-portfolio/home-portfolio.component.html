@@ -1,104 +1,116 @@
-<div 
-  class="content" 
+<div
   [class.light-theme]="theme === themeTypes.light" 
   [class.dark-theme]="theme === themeTypes.dark">
-  <div class="content-wrapper">
-    <section class="hero">
-      <div class="hero-wrapper">
-        <div class="hero-main">
-          <h1 class="hero-main-title">
-            {{ 'home.name' | translate }}
-          </h1>
-          <p class="hero-main-description">
-            {{ 'home.front_end_developer' | translate }}
-          </p>
-        </div>
-
-        <div class="hero-second">
-          <p class="hero-second-subheading first-sub">
-            {{ 'home.portfolio' | translate }}
-          </p>
-          <p class="hero-second-subheading second-sub">
-            social media
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <div class="first-move section-margin"></div>
-
-    <section class="first-section section left">
-      <div class="section-intro-wrapper">
-        <h1 class="section-title">
-          <span class="section-title-text">
-            About Me
-          </span>
-          <div class="section-title-decoration styleOne"></div>
-          <div class="section-title-decoration styleTwo"></div>
-          <div class="section-title-decoration styleThree"></div>
-        </h1>
-        <span class="section-number">01</span>
-      </div>
-
-      <div class="section-deatail-wrapper">
-        <h3 class="section-heading"> Lorem Ipsum</h3>
-        <p class="section-text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
-        <h3 class="section-heading"> Lorem Ipsum</h3>
-        <p class="section-text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
-        <h3 class="section-heading"> Lorem Ipsum</h3>
-        <p class="section-text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
-      </div>
-    </section>
-
-    <div class="second-move section-margin"></div>
-
-    <section class="second-section section right">
-      <div class="section-intro-wrapper">
-        <h1 class="section-title">
-          <span class="section-title-text">About Me</span>
-          <div class="section-title-decoration styleOne"></div>
-          <div class="section-title-decoration styleTwo"></div>
-          <div class="section-title-decoration styleThree"></div>
-        </h1>
-        <span class="section-number">02</span>
-      </div>
-      
-      <div class="section-deatail-wrapper">
-        <h3 class="section-heading"> Lorem Ipsum</h3>
-        <p class="section-text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
-        <h3 class="section-heading"> Lorem Ipsum</h3>
-        <p class="section-text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
-        <h3 class="section-heading"> Lorem Ipsum</h3>
-        <p class="section-text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
-      </div>
-    </section>
-
-    <div class="third-move section-margin"></div>
-
-    <section class="third-section section left">
-      <div class="section-intro-wrapper">
-        <h1 class="section-title">
-          <span class="section-title-text">
-            Contact Me
-          </span>
-          <div class="section-title-decoration styleOne"></div>
-          <div class="section-title-decoration styleTwo"></div>
-          <div class="section-title-decoration styleThree"></div>
-        </h1>
-        <span class="section-number">03</span>
-      </div>
-      
-      <div class="section-deatail-wrapper">
-        <h3 class="section-heading"> Lorem Ipsum</h3>
-        <p class="section-text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
-        <h3 class="section-heading"> Lorem Ipsum</h3>
-        <p class="section-text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
-        <h3 class="section-heading"> Lorem Ipsum</h3>
-        <p class="section-text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
-      </div>
-    </section>
+  <div>
+    <div class="animation-first"></div>
+    <div class="animation-second"></div>
+    <div class="animation-third"></div>
   </div>
-</div>
-<div class="home">
-  <canvas #rendererCanvas id="renderCanvas"></canvas>
+  <div class="content" [class.content_blocked]="showPreloader">
+    <div class="content-wrapper">
+      <section *ngIf="showPreloader">
+        <div class="loading">
+          <img src="assets/img/loading.gif">
+          <button (click)="createWorld()"> Start </button>
+        </div>
+      </section>
+
+      <section class="hero">
+        <div class="hero-wrapper">
+          <div class="hero-main">
+            <h1 class="hero-main-title">
+              {{ 'home.name' | translate }}
+            </h1>
+            <p class="hero-main-description">
+              {{ 'home.front_end_developer' | translate }}
+            </p>
+          </div>
+          <div class="hero-second">
+            <p class="hero-second-subheading first-sub">
+              {{ 'home.portfolio' | translate }}
+            </p>
+            <p class="hero-second-subheading second-sub">
+              social media
+            </p>
+          </div>
+        </div>
+      </section>
+  
+      <div class="first-move section--margin"></div>
+  
+      <section class="section first-section left">
+        <div class="section__intro-wrapper">
+          <h1 class="section__title">
+            <span class="section__title--text">
+              About Me
+            </span>
+            <div class="styleOne"></div>
+            <div class="styleTwo"></div>
+            <div class="styleThree"></div>
+          </h1>
+          <span class="section__number">01</span>
+        </div>
+  
+        <div class="section__deatail-wrapper">
+          <h3 class="section__heading"> Lorem Ipsum</h3>
+          <p class="section__text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
+          <h3 class="section__heading"> Lorem Ipsum</h3>
+          <p class="section__text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
+          <h3 class="section__heading"> Lorem Ipsum</h3>
+          <p class="section__text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
+        </div>
+      </section>
+  
+      <div class="second-move section--margin"></div>
+  
+      <section class="section second-section right">
+        <div class="section__intro-wrapper">
+          <h1 class="section__title">
+            <span class="section__title--text">About Me</span>
+            <div class="styleOne"></div>
+            <div class="styleTwo"></div>
+            <div class="styleThree"></div>
+          </h1>
+          <span class="section__number">02</span>
+        </div>
+        
+        <div class="section__deatail-wrapper">
+          <h3 class="section__heading"> Lorem Ipsum</h3>
+          <p class="section__text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
+          <h3 class="section__heading"> Lorem Ipsum</h3>
+          <p class="section__text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
+          <h3 class="section__heading"> Lorem Ipsum</h3>
+          <p class="section__text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
+        </div>
+      </section>
+  
+      <div class="third-move section--margin"></div>
+  
+      <section class="section third-section left">
+        <div class="section__intro-wrapper">
+          <h1 class="section__title">
+            <span class="section__title--text">
+              Contact Me
+            </span>
+            <div class="styleOne"></div>
+            <div class="styleTwo"></div>
+            <div class="styleThree"></div>
+          </h1>
+          <span class="section__number">03</span>
+        </div>
+        
+        <div class="section__deatail-wrapper">
+          <h3 class="section__heading"> Lorem Ipsum</h3>
+          <p class="section__text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
+          <h3 class="section__heading"> Lorem Ipsum</h3>
+          <p class="section__text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
+          <h3 class="section__heading"> Lorem Ipsum</h3>
+          <p class="section__text"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugiat ratione quas minima natus neque atque consequuntur rem eius ex modi quam, quos nobis laudantium necessitatibus ipsa exercitationem sit nam officiis.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+  <div class="home">
+    <canvas #rendererCanvas id="renderCanvas"></canvas>
+  </div>
 </div>
